@@ -1,0 +1,9 @@
+*
+!/**/
+!*.*
+!LICENSE
+!Makefile
+build/
+lib/
+.vscode/
+tests/
