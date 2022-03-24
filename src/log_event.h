@@ -10,12 +10,14 @@ namespace asynclog {
 
 class Logger;
 
+// LogEvent is a event need to be record in log.
 class LogEvent {
  public:
   using LoggerPtr = std::shared_ptr<Logger>;
   LogEvent(LoggerPtr logger, LogLevel::Level level, const char* file,
            int32_t line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id,
            uint64_t time, const std::string& thread_name);
+
   std::string getContent() const { return content_ss_.str(); }
   std::string getThreadName() const { return t_name_; }
   LoggerPtr getLogger() const { return logger_; }
@@ -59,15 +61,25 @@ class LogEvent {
   LogLevel::Level level_;
 };
 
+// LogEventWrapper wraps a log event used to log as stream.
 class LogEventWrapper {
  public:
   using LogEventPtr = std::shared_ptr<LogEvent>;
   LogEventWrapper(LogEventPtr event);
+
+  // A log event will be append to log file when a LogEventWrapper calls
+  // destructor.
   ~LogEventWrapper();
+
+  // Get sstream.
   std::stringstream& getEventStirngStream();
 
+  // Get event_.
+  LogEventPtr getEvent() const { return event_; }
+
  private:
+  // A log event.
   LogEventPtr event_;
 };
 
-}  // namespace armsy.
+}  // namespace asynclog

@@ -14,26 +14,20 @@ class Logger;
 class LogEvent;
 class FormatItem;
 
-/**
- * @brief 构造函数
- * @param[in] pattern 格式模板
- * @details
- *  %m 消息
- *  %p 日志级别
- *  %r 累计毫秒数
- *  %c 日志名称
- *  %t 线程id
- *  %n 换行
- *  %d 时间
- *  %f 文件名
- *  %l 行号
- *  %T 制表符
- *  %F 协程id
- *  %N 线程名称
- *
- *  默认格式 "%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"
- */
-
+// LogFormatter defines a log format for logging.
+// A legal pattern: "%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"
+// %m log output
+// %p log level
+// %r last-time(ms)
+// %c log name
+// %t thread id
+// %n end of line
+// %d time of the date
+// %f file's name
+// %l line number
+// %T tab
+// %F fiber id
+// %N thread name
 class LogFormatter {
  public:
   using FormatItemPtr = std::shared_ptr<FormatItem>;
@@ -70,4 +64,4 @@ class LogFormatter {
   // If error occurs when parse pattern_.
   bool error_;
 };
-}  // namespace armsy
+}  // namespace asynclog

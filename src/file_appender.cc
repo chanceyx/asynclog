@@ -7,12 +7,12 @@
 
 namespace asynclog {
 
-FileLogAppender::FileLogAppender(const std::string& file_name)
+FileAppender::FileAppender(const std::string& file_name)
     : file_name_(file_name) {
   reopen();
 }
 
-bool FileLogAppender::reopen() {
+bool FileAppender::reopen() {
   if (file_stream_) {
     file_stream_.close();
   }
@@ -20,9 +20,9 @@ bool FileLogAppender::reopen() {
   return !!file_stream_;
 }
 
-void FileLogAppender::appendLog(LoggerPtr logger, LogLevel::Level level,
+void FileAppender::appendLog(LoggerPtr logger, LogLevel::Level level,
                                 LogEventPtr event) {
-  if (level >= level_) {
+  if (level >= limit_level_) {
     uint64_t now = event->getTime();
     if (now >= (lasttime_ + 1)) {
       reopen();
@@ -34,4 +34,5 @@ void FileLogAppender::appendLog(LoggerPtr logger, LogLevel::Level level,
     }
   }
 }
-}  // namespace armsy
+
+}  // namespace asynclog

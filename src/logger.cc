@@ -13,7 +13,7 @@ namespace asynclog {
 Logger::LoggerPtr Logger::DefaultLogger() {
   static auto logger = std::shared_ptr<Logger>(new Logger("default_logger"));
   logger->addAppender(
-      std::shared_ptr<LogAppender>(new FileLogAppender("default_log.log")));
+      std::shared_ptr<LogAppender>(new FileAppender("default_log.log")));
   logger->addAppender(std::shared_ptr<LogAppender>(new StdoutAppender()));
   return logger;
 }

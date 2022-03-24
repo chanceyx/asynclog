@@ -9,7 +9,7 @@ namespace asynclog {
 
 void StdoutAppender::appendLog(LoggerPtr logger, LogLevel::Level level,
                          LogEventPtr event) {
-  if (level >= level_) {
+  if (level >= limit_level_) {
     log_formatter_->format(std::cout, logger, level, event);
   }
 }

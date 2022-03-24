@@ -13,20 +13,31 @@ namespace asynclog {
 class LogEvent;
 class Logger;
 
-class FileLogAppender : public LogAppender {
+// FileAppender is used to append log to a file.
+class FileAppender : public LogAppender {
  public:
   using LoggerPtr = std::shared_ptr<Logger>;
   using LogEventPtr = std::shared_ptr<LogEvent>;
-  using FileLogAppenderPtr = std::shared_ptr<FileLogAppender>;
+  using FileLogAppenderPtr = std::shared_ptr<FileAppender>;
 
-  FileLogAppender(const std::string& file_name);
+  FileAppender(const std::string& file_name);
+
+  // Append log to a file.
   void appendLog(LoggerPtr logger, LogLevel::Level level,
                  LogEventPtr event) override;
+
+  // Reopen the target file.
   bool reopen();
 
  private:
+  // File name.
   std::string file_name_;
+
+  // File stream.
   std::ofstream file_stream_;
+
+  // File's last open time.
   uint64_t lasttime_;
 };
-}  // namespace armsy
+
+}  // namespace asynclog

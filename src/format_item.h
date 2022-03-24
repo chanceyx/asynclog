@@ -13,6 +13,22 @@ namespace asynclog {
 
 class Logger;
 
+// FormatItem is a single item of the formatter's pattern
+// A legal pattern:
+//    "%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"
+// Format items:
+//    %m log output
+//    %p log level
+//    %r duration(ms)
+//    %c log name
+//    %t thread id
+//    %n end of line
+//    %d time of the date
+//    %f file's name
+//    %l line number
+//    %T tab
+//    %F fiber id
+//    %N thread name
 class FormatItem {
  public:
   using LogEventPtr = std::shared_ptr<LogEvent>;
@@ -20,10 +36,13 @@ class FormatItem {
   using FormatItemPtr = std::shared_ptr<FormatItem>;
 
   virtual ~FormatItem() {}
+
+  // Each format item uses format() to output its content.
   virtual void format(std::ostream &os, std::shared_ptr<Logger> logger,
                       LogLevel::Level level, LogEventPtr event) = 0;
 };
 
+// Output a log event's message of a log record.
 class MsgItem : public FormatItem {
  public:
   MsgItem(const std::string &str = "") {}
@@ -34,6 +53,7 @@ class MsgItem : public FormatItem {
   }
 };
 
+// Output Log level of a log record.
 class LevelItem : public FormatItem {
  public:
   LevelItem(const std::string &str = "") {}
@@ -44,6 +64,7 @@ class LevelItem : public FormatItem {
   }
 };
 
+// Output duration of a log event of a log record.
 class ElapseItem : public FormatItem {
  public:
   ElapseItem(const std::string &str = "") {}
@@ -54,6 +75,7 @@ class ElapseItem : public FormatItem {
   }
 };
 
+// Output log name(log-set) of a log record.
 class NameItem : public FormatItem {
  public:
   NameItem(const std::string &str = "") {}
@@ -63,6 +85,7 @@ class NameItem : public FormatItem {
   }
 };
 
+// Output log event's thread id of a log record.
 class ThreadIdItem : public FormatItem {
  public:
   ThreadIdItem(const std::string &str = "") {}
@@ -72,6 +95,7 @@ class ThreadIdItem : public FormatItem {
   }
 };
 
+// Output log event's thread name of a log record.
 class ThreadNameItem : public FormatItem {
  public:
   ThreadNameItem(const std::string &str = "") {}
@@ -81,6 +105,7 @@ class ThreadNameItem : public FormatItem {
   }
 };
 
+// Output log event's fiber id of a log record.
 class FiberItem : public FormatItem {
  public:
   FiberItem(const std::string &str = "") {}
@@ -90,6 +115,7 @@ class FiberItem : public FormatItem {
   }
 };
 
+// Output time info of a log record.
 class DateTimeItem : public FormatItem {
  public:
   DateTimeItem(const std::string &format = "%Y-%m-%d %H:%M:%S")
@@ -113,6 +139,7 @@ class DateTimeItem : public FormatItem {
   std::string date_time_format_;
 };
 
+// Output a log event's file name of a log record.
 class FileNameItem : public FormatItem {
  public:
   FileNameItem(const std::string &str = "") {}
@@ -123,6 +150,7 @@ class FileNameItem : public FormatItem {
   }
 };
 
+// Output a line break of a log record.
 class NewLineItem : public FormatItem {
  public:
   NewLineItem(const std::string &str = "") {}
@@ -133,6 +161,7 @@ class NewLineItem : public FormatItem {
   }
 };
 
+// Out put a spersific string message of a log record.
 class StringItem : public FormatItem {
  public:
   StringItem(const std::string &str) : str_(str) {}
@@ -146,6 +175,7 @@ class StringItem : public FormatItem {
   std::string str_;
 };
 
+// Output a tab of a log record.
 class TabItem : public FormatItem {
  public:
   TabItem(const std::string &str = "") {}
@@ -156,4 +186,4 @@ class TabItem : public FormatItem {
   }
 };
 
-}  // namespace armsy
+}  // namespace asynclog

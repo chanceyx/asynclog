@@ -4,6 +4,8 @@
 #include <string>
 
 namespace asynclog {
+
+// Log level.
 class LogLevel {
  public:
   enum Level {
@@ -36,6 +38,7 @@ class LogLevel {
     }
   }
 };
-}  // namespace armsy
+
+}  // namespace asynclog
 
 #endif  // LOG_LEVEL_H_

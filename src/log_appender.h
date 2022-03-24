@@ -11,6 +11,7 @@ class LogFormatter;
 class LogEvent;
 class Logger;
 
+// LogAppender is used to append log to a specific place.
 class LogAppender {
  public:
   using LogFormatterPtr = std::shared_ptr<LogFormatter>;
@@ -18,15 +19,23 @@ class LogAppender {
   using LoggerPtr = std::shared_ptr<Logger>;
 
   virtual ~LogAppender() {}
+
+  // Append log to a specific place.
   virtual void appendLog(LoggerPtr logger, LogLevel::Level level,
-                   LogEventPtr event) = 0;
+                         LogEventPtr event) = 0;
+
+  // Set a formatter of the appender.
   void setFormatter(LogFormatterPtr log_formatter) {
     log_formatter_ = log_formatter;
   }
+
+  // Get a formatter of the appender.
   LogFormatterPtr getFormatter() const { return log_formatter_; }
 
  protected:
-  LogLevel::Level level_ = LogLevel::DEBUG;
+  //
+  LogLevel::Level limit_level_ = LogLevel::DEBUG;
   LogFormatterPtr log_formatter_;
 };
-}  // namespace armsy
+
+}  // namespace asynclog
