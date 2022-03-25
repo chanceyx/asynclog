@@ -29,4 +29,20 @@ std::stringstream& LogEventWrapper::getEventStirngStream() {
   return event_->getContentSS();
 }
 
-}  // namespace armsy
+void LogEvent::format(const char* fmt, ...) {
+  va_list arg_list;
+  va_start(arg_list, fmt);
+  format(fmt, arg_list);
+  va_end(arg_list);
+}
+
+void LogEvent::format(const char* fmt, va_list arg_list) {
+  char* buf = nullptr;
+  int len = vasprintf(&buf, fmt, arg_list);
+  if (len != -1) {
+    content_ss_ << std::string(buf, len);
+    free(buf);
+  }
+}
+
+}  // namespace asynclog

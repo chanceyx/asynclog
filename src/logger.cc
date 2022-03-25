@@ -19,8 +19,8 @@ Logger::LoggerPtr Logger::DefaultLogger() {
 }
 
 Logger::Logger(const std::string &name) : name_(name) {
-  default_formatter_.reset(new LogFormatter(
-      "%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
+  default_formatter_.reset(
+      new LogFormatter("%d{%Y-%m-%d %H:%M:%S} %t %N %F [%c] %f:%l [%p] %m%n"));
 }
 
 void Logger::addAppender(LogAppenderPtr appender) {
@@ -57,4 +57,4 @@ void Logger::fatal(LogEventPtr event) { log(LogLevel::FATAL, event); }
 
 void Logger::error(LogEventPtr event) { log(LogLevel::ERROR, event); }
 
-}  // namespace armsy
+}  // namespace asynclog

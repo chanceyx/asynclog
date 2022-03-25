@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdarg.h>
+
 #include <memory>
 #include <sstream>
 #include <string>
@@ -30,7 +32,13 @@ class LogEvent {
   uint32_t getFid() const { return fid_; }
   uint64_t getTime() const { return time_; }
 
+  // Build content with c style format.
+  void format(const char* fmt, ...);
+
  private:
+  // Build content with c style format.
+  void format(const char* fmt, va_list al);
+
   // Name of the file to output.
   const char* file_;
 

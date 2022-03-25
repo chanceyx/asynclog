@@ -37,7 +37,7 @@ void LogFormatter::parse() {
   const FormatType kOption = 1;
 
   const int kMeetOpenBrace = 1;
-  const int kMeetCloseBrace = 0;
+  const int kDefaultStatus = 0;
 
   // tuple = <str>:<sub-format>:<type>
   // type = kString or kOption
@@ -72,14 +72,14 @@ void LogFormatter::parse() {
 
     // TODO: use stack.
     while (n < pattern_.size()) {
-      if (fmt_status == kMeetCloseBrace &&
+      if (fmt_status == kDefaultStatus &&
           (!isalpha(pattern_[n]) && pattern_[n] != '{' &&
            pattern_[n] != '}')) {  // parse option
         option = pattern_.substr(i + 1, n - i - 1);
         break;
       }
 
-      if (fmt_status == 0) {
+      if (fmt_status == kDefaultStatus) {
         if (pattern_[n] == '{') {  // parse option
           option = pattern_.substr(i + 1, n - i - 1);
           fmt_status = kMeetOpenBrace;
@@ -91,7 +91,7 @@ void LogFormatter::parse() {
         if (pattern_[n] == '}') {  // parse sub-format
           sub_format =
               pattern_.substr(sub_format_begin + 1, n - sub_format_begin - 1);
-          fmt_status = kMeetCloseBrace;
+          fmt_status = kDefaultStatus;
           ++n;
           break;
         }
@@ -105,7 +105,7 @@ void LogFormatter::parse() {
       }
     }
 
-    if (fmt_status == 0) {
+    if (fmt_status == kDefaultStatus) {
       if (!str.empty()) {  //  store string
         vec.push_back(std::make_tuple(str, std::string(), kString));
         str.clear();
@@ -115,6 +115,7 @@ void LogFormatter::parse() {
       vec.push_back(std::make_tuple(option, sub_format, kOption));
       i = n - 1;
     } else if (fmt_status == kMeetOpenBrace) {  // pattern_'s illegal
+      // TODO: remove std::cout.
       std::cout << "pattern parse error: " << pattern_ << " - "
                 << pattern_.substr(i) << std::endl;
       vec.push_back(std::make_tuple("<<pattern_error>>", sub_format, kString));
@@ -133,18 +134,18 @@ void LogFormatter::parse() {
 #str, [](const std::string                                         \
                  &item_str) { return FormatItemPtr(new C(item_str)); } \
   }
-          XX(m, MsgItem),         // m:消息
-          XX(p, LevelItem),       // p:日志级别
-          XX(r, ElapseItem),      // r:累计毫秒数
-          XX(c, NameItem),        // c:日志名称
-          XX(t, ThreadIdItem),    // t:线程id
-          XX(n, NewLineItem),     // n:换行
-          XX(d, DateTimeItem),    // d:时间
-          XX(f, FileNameItem),    // f:文件名
-          XX(l, TabItem),         // l:行号
-          XX(T, TabItem),         // T:Tab
-          XX(F, FiberItem),       // F:协程id
-          XX(N, ThreadNameItem),  // N:线程名称
+          XX(m, MsgItem),         // m: mg
+          XX(p, LevelItem),       // p: log level
+          XX(r, ElapseItem),      // r: duration
+          XX(c, NameItem),        // c: log-set
+          XX(t, ThreadIdItem),    // t: thread id
+          XX(n, NewLineItem),     // n: line break
+          XX(l, LineItem),        // l: line number
+          XX(d, DateTimeItem),    // d: date time
+          XX(f, FileNameItem),    // f: file name
+          XX(T, TabItem),         // T: Tab
+          XX(F, FiberItem),       // F: fiber id
+          XX(N, ThreadNameItem),  // N: thread name
 #undef XX
       };
 
@@ -155,7 +156,7 @@ void LogFormatter::parse() {
       auto it = s_format_items.find(std::get<0>(tuple_item));
       if (it == s_format_items.end()) {
         items_.push_back(FormatItemPtr(new StringItem(
-            "<<error_format %" + std::get<0>(tuple_item) + ">>")));
+            "<<error_option %" + std::get<0>(tuple_item) + ">>")));
       } else {
         items_.push_back(it->second(std::get<1>(tuple_item)));
       }
@@ -163,4 +164,4 @@ void LogFormatter::parse() {
   }
 }
 
-}  // namespace armsy
+}  // namespace asynclog

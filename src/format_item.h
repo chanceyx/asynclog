@@ -161,6 +161,17 @@ class NewLineItem : public FormatItem {
   }
 };
 
+// Output line number of a log record.
+class LineItem : public FormatItem {
+ public:
+  LineItem(const std::string &str = "") {}
+
+  void format(std::ostream &os, LoggerPtr logger, LogLevel::Level level,
+              LogEventPtr event) override {
+    os << event->getLine();
+  }
+};
+
 // Out put a spersific string message of a log record.
 class StringItem : public FormatItem {
  public:
