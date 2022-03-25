@@ -7,11 +7,10 @@
 
 namespace asynclog {
 
-void StdoutAppender::appendLog(LoggerPtr logger, LogLevel::Level level,
-                         LogEventPtr event) {
+void StdoutAppender::appendLog(LogLevel::Level level, LogEventPtr event) {
   if (level >= limit_level_) {
-    log_formatter_->format(std::cout, logger, level, event);
+    log_formatter_->format(std::cout, level, event);
   }
 }
 
-}  // namespace armsy
+}  // namespace asynclog

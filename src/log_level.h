@@ -1,5 +1,5 @@
-#ifndef LOG_LEVEL_H_
-#define LOG_LEVEL_H_
+#ifndef _LOG_LEVEL_H_
+#define _LOG_LEVEL_H_
 
 #include <string>
 
@@ -41,4 +41,4 @@ class LogLevel {
 
 }  // namespace asynclog
 
-#endif  // LOG_LEVEL_H_
+#endif  // _LOG_LEVEL_H_

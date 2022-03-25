@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "log_level.h"
+#include "util/noncopyable.h"
 
 namespace asynclog {
 
@@ -28,7 +29,7 @@ class FormatItem;
 // %T tab
 // %F fiber id
 // %N thread name
-class LogFormatter {
+class LogFormatter : noncopyable {
  public:
   using FormatItemPtr = std::shared_ptr<FormatItem>;
   using LogEventPtr = std::shared_ptr<LogEvent>;
@@ -37,12 +38,11 @@ class LogFormatter {
   LogFormatter(const std::string &pattern);
 
   // Format the event to string base on pattern_.
-  std::string format(LoggerPtr logger, LogLevel::Level level,
-                     LogEventPtr event);
+  std::string format(LogLevel::Level level, LogEventPtr event);
 
   // Format the event to ostream base on pattern_.
-  std::ostream &format(std::ostream &ofs, LoggerPtr logger,
-                       LogLevel::Level level, LogEventPtr event);
+  std::ostream &format(std::ostream &ofs, LogLevel::Level level,
+                       LogEventPtr event);
 
   // Parse the pattern_, this function is called by the constructor. If the
   // pattern_ is illegal, error_ is set to true.
@@ -62,6 +62,6 @@ class LogFormatter {
   std::vector<FormatItemPtr> items_;
 
   // If error occurs when parse pattern_.
-  bool error_;
+  bool error_ = false;
 };
 }  // namespace asynclog

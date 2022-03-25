@@ -21,8 +21,7 @@ class LogAppender {
   virtual ~LogAppender() {}
 
   // Append log to a specific place.
-  virtual void appendLog(LoggerPtr logger, LogLevel::Level level,
-                         LogEventPtr event) = 0;
+  virtual void appendLog(LogLevel::Level level, LogEventPtr event) = 0;
 
   // Set a formatter of the appender.
   void setFormatter(LogFormatterPtr log_formatter) {

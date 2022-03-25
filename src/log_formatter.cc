@@ -15,18 +15,17 @@ LogFormatter::LogFormatter(const std::string &pattern) : pattern_(pattern) {
   parse();
 }
 
-std::string LogFormatter::format(LoggerPtr logger, LogLevel::Level level,
-                                 LogEventPtr event) {
+std::string LogFormatter::format(LogLevel::Level level, LogEventPtr event) {
   std::stringstream ss;
   for (auto &i : items_) {
-    i->format(ss, logger, level, event);
+    i->format(ss, level, event);
   }
   return ss.str();
 }
-std::ostream &LogFormatter::format(std::ostream &ofs, LoggerPtr logger,
-                                   LogLevel::Level level, LogEventPtr event) {
+std::ostream &LogFormatter::format(std::ostream &ofs, LogLevel::Level level,
+                                   LogEventPtr event) {
   for (auto &i : items_) {
-    i->format(ofs, logger, level, event);
+    i->format(ofs, level, event);
   }
   return ofs;
 }
@@ -119,6 +118,7 @@ void LogFormatter::parse() {
       std::cout << "pattern parse error: " << pattern_ << " - "
                 << pattern_.substr(i) << std::endl;
       vec.push_back(std::make_tuple("<<pattern_error>>", sub_format, kString));
+      error_ = true;
     }
   }
 
@@ -156,7 +156,7 @@ void LogFormatter::parse() {
       auto it = s_format_items.find(std::get<0>(tuple_item));
       if (it == s_format_items.end()) {
         items_.push_back(FormatItemPtr(new StringItem(
-            "<<error_option %" + std::get<0>(tuple_item) + ">>")));
+            "<<unknown_option %" + std::get<0>(tuple_item) + ">>")));
       } else {
         items_.push_back(it->second(std::get<1>(tuple_item)));
       }

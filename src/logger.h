@@ -27,7 +27,7 @@ class Logger : public std::enable_shared_from_this<Logger> {
   using LogEventPtr = std::shared_ptr<LogEvent>;
   using LogAppenderPtr = std::shared_ptr<LogAppender>;
 
-  Logger(const std::string& name = "root");
+  Logger(const std::string &name = "default_logger");
 
   // Return logger's name_.
   std::string getName() const { return name_; }
@@ -35,7 +35,9 @@ class Logger : public std::enable_shared_from_this<Logger> {
   // Log the event.
   void log(LogLevel::Level level, LogEventPtr event);
 
-  // Log the event by given LogLevel.
+  void log(LogLevel::Level level, const std::string &msg);
+
+  // Log the event by given log level.
   void debug(LogEventPtr event);
   void info(LogEventPtr event);
   void warn(LogEventPtr event);
@@ -47,6 +49,21 @@ class Logger : public std::enable_shared_from_this<Logger> {
 
   // Remove a log appender for logger.
   void removeAppender(LogAppenderPtr appender);
+
+  // Return a default file appender.
+  static LogAppenderPtr makeFileAppender(const std::string &file_name);
+
+  // Return a new default appender.
+  static LogAppenderPtr makeStdoutAppender();
+
+  // Return a new log formatter.
+  static LogFormatterPtr makeFormatter(const std::string &pattern);
+
+  // Return a new logger.
+  static LoggerPtr makeLogger(const std::string &name);
+
+  // Return a new log event.
+  LogEventPtr makeEvent(LogLevel::Level level);
 
   // Get the limit log level of the logger.
   LogLevel::Level getLevel() const { return limit_level_; }
@@ -74,4 +91,4 @@ class Logger : public std::enable_shared_from_this<Logger> {
   LogFormatterPtr default_formatter_;
 };
 
-}  // namespace armsy
+}  // namespace asynclog

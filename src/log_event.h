@@ -7,13 +7,14 @@
 #include <string>
 
 #include "log_level.h"
+#include "util/noncopyable.h"
 
 namespace asynclog {
 
 class Logger;
 
 // LogEvent is a event need to be record in log.
-class LogEvent {
+class LogEvent : noncopyable {
  public:
   using LoggerPtr = std::shared_ptr<Logger>;
   LogEvent(LoggerPtr logger, LogLevel::Level level, const char* file,

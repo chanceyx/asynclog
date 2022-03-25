@@ -7,6 +7,7 @@
 
 #include "log_appender.h"
 #include "log_level.h"
+#include "util/noncopyable.h"
 
 namespace asynclog {
 
@@ -14,7 +15,7 @@ class LogEvent;
 class Logger;
 
 // FileAppender is used to append log to a file.
-class FileAppender : public LogAppender {
+class FileAppender : noncopyable, public LogAppender {
  public:
   using LoggerPtr = std::shared_ptr<Logger>;
   using LogEventPtr = std::shared_ptr<LogEvent>;
@@ -23,8 +24,7 @@ class FileAppender : public LogAppender {
   FileAppender(const std::string& file_name);
 
   // Append log to a file.
-  void appendLog(LoggerPtr logger, LogLevel::Level level,
-                 LogEventPtr event) override;
+  void appendLog(LogLevel::Level level, LogEventPtr event) override;
 
   // Reopen the target file.
   bool reopen();
@@ -37,7 +37,7 @@ class FileAppender : public LogAppender {
   std::ofstream file_stream_;
 
   // File's last open time.
-  uint64_t lasttime_;
+  uint64_t lasttime_ = 0;
 };
 
 }  // namespace asynclog

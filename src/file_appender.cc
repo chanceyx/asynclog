@@ -20,8 +20,7 @@ bool FileAppender::reopen() {
   return !!file_stream_;
 }
 
-void FileAppender::appendLog(LoggerPtr logger, LogLevel::Level level,
-                                LogEventPtr event) {
+void FileAppender::appendLog(LogLevel::Level level, LogEventPtr event) {
   if (level >= limit_level_) {
     uint64_t now = event->getTime();
     if (now >= (lasttime_ + 1)) {
@@ -29,7 +28,7 @@ void FileAppender::appendLog(LoggerPtr logger, LogLevel::Level level,
       lasttime_ = now;
     }
 
-    if (!log_formatter_->format(file_stream_, logger, level, event)) {
+    if (!log_formatter_->format(file_stream_, level, event)) {
       std::cout << "error" << std::endl;
     }
   }
