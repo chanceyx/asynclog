@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "log_level.h"
-#include "util/noncopyable.h"
+#include "util/singleton.h"
 
 namespace asynclog {
 
@@ -44,10 +44,6 @@ class LogFormatter : noncopyable {
   std::ostream &format(std::ostream &ofs, LogLevel::Level level,
                        LogEventPtr event);
 
-  // Parse the pattern_, this function is called by the constructor. If the
-  // pattern_ is illegal, error_ is set to true.
-  void parse();
-
   // If the pattern_ is legal.
   bool isError() const { return error_; }
 
@@ -55,6 +51,10 @@ class LogFormatter : noncopyable {
   const std::string getPattern() const { return pattern_; }
 
  private:
+  // Parse the pattern_, this function is called by the constructor. If the
+  // pattern_ is illegal, error_ is set to true.
+  void parse();
+
   // Format pattern.
   std::string pattern_;
 

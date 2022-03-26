@@ -1,17 +1,18 @@
 #pragma once
 
 #include "log_event.h"
+#include "util/current_thread.h"
 
 // Stream style log.
 // Usage:
 //  LOG_AT_LEVEL(logger, asynclog::LogLevel::FATAL) << "fatal info";
 //  LOG_WARN(logger) << "error info";
-#define LOG(logger, level)                                                   \
-  if (logger->getLevel() <= level)                                           \
-  asynclog::LogEventWrapper(                                                 \
-      std::shared_ptr<asynclog::LogEvent>(                                   \
-          new asynclog::LogEvent(logger, level, __FILE__, __LINE__, 0, 1, 2, \
-                                 time(0), "test_thread")))                   \
+#define LOG(logger, level)                                               \
+  if (logger->getLevel() <= level)                                       \
+  asynclog::LogEventWrapper(                                             \
+      std::shared_ptr<asynclog::LogEvent>(new asynclog::LogEvent(        \
+          logger, level, __FILE__, __LINE__, 0, CurrentThread::tid(), 2, \
+          time(0), "test_thread")))                                      \
       .getEventStirngStream()
 
 #define LOG_DEBUG(logger) LOG(logger, asynclog::LogLevel::DEBUG)
@@ -29,13 +30,13 @@
 //  LOG_F(logger, asynclog::LogLevel::FATAL, "%s - errno: %d",
 //               "fatal info", errno);
 //  LOG_ERROR_F(logger, "%s - errno: %d", "error info", errno);
-#define LOG_F(logger, level, fmt, ...)                                       \
-  if (logger->getLevel() <= level)                                           \
-  asynclog::LogEventWrapper(                                                 \
-      std::shared_ptr<asynclog::LogEvent>(                                   \
-          new asynclog::LogEvent(logger, level, __FILE__, __LINE__, 0, 1, 2, \
-                                 time(0), "test_thread")))                   \
-      .getEvent()                                                            \
+#define LOG_F(logger, level, fmt, ...)                                   \
+  if (logger->getLevel() <= level)                                       \
+  asynclog::LogEventWrapper(                                             \
+      std::shared_ptr<asynclog::LogEvent>(new asynclog::LogEvent(        \
+          logger, level, __FILE__, __LINE__, 0, CurrentThread::tid(), 2, \
+          time(0), "test_thread")))                                      \
+      .getEvent()                                                        \
       ->format(fmt, __VA_ARGS__)
 
 #define LOG_DEBUG_F(logger, fmt, ...) \

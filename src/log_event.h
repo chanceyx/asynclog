@@ -7,7 +7,7 @@
 #include <string>
 
 #include "log_level.h"
-#include "util/noncopyable.h"
+#include "util/singleton.h"
 
 namespace asynclog {
 

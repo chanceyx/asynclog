@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LOG_APPENDER_
+#define _LOG_APPENDER_
 
 #include <memory>
 #include <string>
@@ -17,6 +18,11 @@ class LogAppender {
   using LogFormatterPtr = std::shared_ptr<LogFormatter>;
   using LogEventPtr = std::shared_ptr<LogEvent>;
   using LoggerPtr = std::shared_ptr<Logger>;
+
+  enum AppenderType {
+    FILEAPPENDER = 1,
+    STDOUTAPPENDER = 2,
+  };
 
   virtual ~LogAppender() {}
 
@@ -38,3 +44,5 @@ class LogAppender {
 };
 
 }  // namespace asynclog
+
+#endif  // _LOG_APPENDER_

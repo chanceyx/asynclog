@@ -6,7 +6,13 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -rdynamic -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function")
 
-aux_source_directory(./src SRC_LIST)
+aux_source_directory(./src SUB_SRC_LIST)
+aux_source_directory(./src/util SUB_SRC_LIST_UTIL)
+
+set(SRC_LIST
+    ${SUB_SRC_LIST}
+    ${SUB_SRC_LIST_UTIL}
+    )
 
 add_library(asynclog SHARED ${SRC_LIST})
 

@@ -7,7 +7,7 @@
 
 #include "log_appender.h"
 #include "log_level.h"
-#include "util/noncopyable.h"
+#include "util/singleton.h"
 
 namespace asynclog {
 
@@ -26,10 +26,10 @@ class FileAppender : noncopyable, public LogAppender {
   // Append log to a file.
   void appendLog(LogLevel::Level level, LogEventPtr event) override;
 
+ private:
   // Reopen the target file.
   bool reopen();
 
- private:
   // File name.
   std::string file_name_;
 

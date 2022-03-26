@@ -11,7 +11,7 @@
 
 namespace asynclog {
 
-Logger::LoggerPtr Logger::DefaultLogger() {
+std::shared_ptr<Logger> DefaultLogger() {
   static auto default_logger =
       std::shared_ptr<Logger>(new Logger("default_logger"));
   default_logger->addAppender(
@@ -21,28 +21,7 @@ Logger::LoggerPtr Logger::DefaultLogger() {
 
 Logger::Logger(const std::string &name) : name_(name) {
   default_formatter_.reset(
-      new LogFormatter("%d{%Y-%m-%d %H:%M:%S} %t %N %F [%c] %f:%l [%p] %m%n"));
-}
-
-Logger::LoggerPtr Logger::makeLogger(const std::string &name) {
-  auto logger = std::shared_ptr<Logger>(new Logger(name));
-  return logger;
-}
-
-Logger::LogAppenderPtr Logger::makeFileAppender(const std::string &file_name) {
-  auto file_appender =
-      std::shared_ptr<LogAppender>(new FileAppender(file_name));
-  return file_appender;
-}
-
-Logger::LogAppenderPtr Logger::makeStdoutAppender() {
-  auto stdout_appender = std::shared_ptr<LogAppender>(new StdoutAppender);
-  return stdout_appender;
-}
-
-Logger::LogFormatterPtr Logger::makeFormatter(const std::string &pattern) {
-  auto log_formatter = std::shared_ptr<LogFormatter>(new LogFormatter(pattern));
-  return log_formatter;
+      new LogFormatter("%d{%Y-%m-%d %H:%M:%S} %t %N [%c] %f:%l [%p] %m%n"));
 }
 
 Logger::LogEventPtr Logger::makeEvent(LogLevel::Level level) {
@@ -84,5 +63,26 @@ void Logger::info(LogEventPtr event) { log(LogLevel::INFO, event); }
 void Logger::fatal(LogEventPtr event) { log(LogLevel::FATAL, event); }
 
 void Logger::error(LogEventPtr event) { log(LogLevel::ERROR, event); }
+
+std::shared_ptr<Logger> makeLogger(const std::string &name) {
+  auto logger = std::shared_ptr<Logger>(new Logger(name));
+  return logger;
+}
+
+std::shared_ptr<LogAppender> makeFileAppender(const std::string &file_name) {
+  auto file_appender =
+      std::shared_ptr<LogAppender>(new FileAppender(file_name));
+  return file_appender;
+}
+
+std::shared_ptr<LogAppender> makeStdoutAppender() {
+  auto stdout_appender = std::shared_ptr<LogAppender>(new StdoutAppender);
+  return stdout_appender;
+}
+
+std::shared_ptr<LogFormatter> makeFormatter(const std::string &pattern) {
+  auto log_formatter = std::shared_ptr<LogFormatter>(new LogFormatter(pattern));
+  return log_formatter;
+}
 
 }  // namespace asynclog

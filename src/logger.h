@@ -9,6 +9,7 @@
 #include <string>
 
 #include "log.h"
+#include "log_appender.h"
 #include "log_level.h"
 
 namespace asynclog {
@@ -35,8 +36,6 @@ class Logger : public std::enable_shared_from_this<Logger> {
   // Log the event.
   void log(LogLevel::Level level, LogEventPtr event);
 
-  void log(LogLevel::Level level, const std::string &msg);
-
   // Log the event by given log level.
   void debug(LogEventPtr event);
   void info(LogEventPtr event);
@@ -50,18 +49,6 @@ class Logger : public std::enable_shared_from_this<Logger> {
   // Remove a log appender for logger.
   void removeAppender(LogAppenderPtr appender);
 
-  // Return a default file appender.
-  static LogAppenderPtr makeFileAppender(const std::string &file_name);
-
-  // Return a new default appender.
-  static LogAppenderPtr makeStdoutAppender();
-
-  // Return a new log formatter.
-  static LogFormatterPtr makeFormatter(const std::string &pattern);
-
-  // Return a new logger.
-  static LoggerPtr makeLogger(const std::string &name);
-
   // Return a new log event.
   LogEventPtr makeEvent(LogLevel::Level level);
 
@@ -70,9 +57,6 @@ class Logger : public std::enable_shared_from_this<Logger> {
 
   // Set the limit log level of the logger.
   void setLevel(LogLevel::Level level) { limit_level_ = level; }
-
-  // Get the default logger.
-  static LoggerPtr DefaultLogger();
 
  private:
   // Logger's name.
@@ -90,5 +74,20 @@ class Logger : public std::enable_shared_from_this<Logger> {
   // default_formatter_.
   LogFormatterPtr default_formatter_;
 };
+
+// Get the default logger.
+std::shared_ptr<Logger> DefaultLogger();
+
+// Return a new logger.
+std::shared_ptr<Logger> makeLogger(const std::string &name);
+
+// Return a new stdout appender.
+std::shared_ptr<LogAppender> makeStdoutAppender();
+
+// Return a new file appender.
+std::shared_ptr<LogAppender> makeFileAppender(const std::string &file_name);
+
+// Return a new log formatter.
+std::shared_ptr<LogFormatter> makeFormatter(const std::string &pattern);
 
 }  // namespace asynclog
