@@ -1,6 +1,6 @@
 #include "current_thread.h"
 
-namespace CurrentThread {
+namespace current {
 
 // __thread : each thread has its own t_cachedTid.
 __thread uint32_t t_cached_tid = 0;

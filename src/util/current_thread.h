@@ -8,7 +8,7 @@
 // log event has a tid_ member, if each log event use system call to get their
 // tid, too many systems call may affect the performance of the log service. So
 // cache each thread's information may be a good idea to get better performance.
-namespace CurrentThread {
+namespace current {
 
 // variables declared by keyword __thread can have their own independent values
 // in each thread.

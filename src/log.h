@@ -11,7 +11,7 @@
   if (logger->getLevel() <= level)                                       \
   asynclog::LogEventWrapper(                                             \
       std::shared_ptr<asynclog::LogEvent>(new asynclog::LogEvent(        \
-          logger, level, __FILE__, __LINE__, 0, CurrentThread::tid(), 2, \
+          logger, level, __FILE__, __LINE__, 0, current::tid(), 2, \
           time(0), "test_thread")))                                      \
       .getEventStirngStream()
 
@@ -34,7 +34,7 @@
   if (logger->getLevel() <= level)                                       \
   asynclog::LogEventWrapper(                                             \
       std::shared_ptr<asynclog::LogEvent>(new asynclog::LogEvent(        \
-          logger, level, __FILE__, __LINE__, 0, CurrentThread::tid(), 2, \
+          logger, level, __FILE__, __LINE__, 0, current::tid(), 2, \
           time(0), "test_thread")))                                      \
       .getEvent()                                                        \
       ->format(fmt, __VA_ARGS__)
