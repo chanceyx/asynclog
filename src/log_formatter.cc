@@ -20,6 +20,7 @@ std::string LogFormatter::format(LogLevel::Level level, LogEventPtr event) {
   for (auto &i : items_) {
     i->format(ss, level, event);
   }
+
   return ss.str();
 }
 std::ostream &LogFormatter::format(std::ostream &ofs, LogLevel::Level level,

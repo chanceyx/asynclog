@@ -7,6 +7,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "log.h"
 #include "log_appender.h"
@@ -18,6 +19,11 @@ class LogFormatter;
 class LogEvent;
 class LogAppender;
 
+enum ASYNC {
+  DISABLEASYNC = 0,
+  ENABLEASYNC = 1,
+};
+
 // Logger is class use for logging, when you get a object logger, you can use
 // it to log like this: logger.log(LogEvent::INFO, event);
 // logger.debug(event);
@@ -28,10 +34,13 @@ class Logger : public std::enable_shared_from_this<Logger> {
   using LogEventPtr = std::shared_ptr<LogEvent>;
   using LogAppenderPtr = std::shared_ptr<LogAppender>;
 
-  Logger(const std::string &name = "default_logger");
+  Logger(const std::string &name = "default_logger",
+         ASYNC async = DISABLEASYNC);
 
   // Return logger's name_.
   std::string getName() const { return name_; }
+
+  void asynclog(LogLevel::Level level, LogEventPtr event);
 
   // Log the event.
   void log(LogLevel::Level level, LogEventPtr event);
@@ -58,6 +67,9 @@ class Logger : public std::enable_shared_from_this<Logger> {
   // Set the limit log level of the logger.
   void setLevel(LogLevel::Level level) { limit_level_ = level; }
 
+  // If enable async log.
+  bool isAsync() const { return async_; }
+
  private:
   // Logger's name.
   std::string name_;
@@ -73,19 +85,31 @@ class Logger : public std::enable_shared_from_this<Logger> {
   // in function addAppender() the appender's formatter will be set to
   // default_formatter_.
   LogFormatterPtr default_formatter_;
+
+  bool async_;
+
+  bool async_logging_;
+
+  void start_asynclog();
+
+  
+
+  std::vector<std::unique_ptr<std::thread>> theads_;
 };
 
 // Get the default logger.
 std::shared_ptr<Logger> DefaultLogger();
 
 // Return a new logger.
-std::shared_ptr<Logger> makeLogger(const std::string &name);
+std::shared_ptr<Logger> makeLogger(const std::string &name,
+                                   ASYNC async = DISABLEASYNC);
 
 // Return a new stdout appender.
 std::shared_ptr<LogAppender> makeStdoutAppender();
 
 // Return a new file appender.
-std::shared_ptr<LogAppender> makeFileAppender(const std::string &file_name);
+std::shared_ptr<LogAppender> makeFileAppender(const std::string &file_name,
+                                              std::shared_ptr<Logger> logger);
 
 // Return a new log formatter.
 std::shared_ptr<LogFormatter> makeFormatter(const std::string &pattern);
