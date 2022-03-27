@@ -21,6 +21,8 @@ class LogEvent : noncopyable {
            int32_t line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id,
            uint64_t time, const std::string& thread_name);
 
+  ~LogEvent();
+
   std::string getContent() const { return content_ss_.str(); }
   std::string getThreadName() const { return t_name_; }
   LoggerPtr getLogger() const { return logger_; }

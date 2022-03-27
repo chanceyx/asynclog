@@ -1,7 +1,7 @@
 #pragma once
 
 #include "log_event.h"
-#include "util/current_thread.h"
+#include "util/current.h"
 
 // Stream style log.
 // Usage:

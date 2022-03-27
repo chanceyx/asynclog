@@ -18,6 +18,8 @@ LogEvent::LogEvent(LoggerPtr logger, LogLevel::Level level, const char* file,
       logger_(logger),
       level_(level) {}
 
+LogEvent::~LogEvent() {}
+
 LogEventWrapper::LogEventWrapper(LogEventWrapper::LogEventPtr event)
     : event_(event) {}
 

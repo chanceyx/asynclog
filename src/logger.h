@@ -7,7 +7,6 @@
 #include <memory>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include "log.h"
 #include "log_appender.h"
@@ -18,10 +17,11 @@ namespace asynclog {
 class LogFormatter;
 class LogEvent;
 class LogAppender;
+class LogCollector;
 
 enum ASYNC {
-  DISABLEASYNC = 0,
-  ENABLEASYNC = 1,
+  DISABLE = 0,
+  ENABLE = 1,
 };
 
 // Logger is class use for logging, when you get a object logger, you can use
@@ -33,13 +33,15 @@ class Logger : public std::enable_shared_from_this<Logger> {
   using LogFormatterPtr = std::shared_ptr<LogFormatter>;
   using LogEventPtr = std::shared_ptr<LogEvent>;
   using LogAppenderPtr = std::shared_ptr<LogAppender>;
+  using LogCollectorPtr = std::shared_ptr<LogCollector>;
 
-  Logger(const std::string &name = "default_logger",
-         ASYNC async = DISABLEASYNC);
+  Logger(const std::string &name = "default_logger", ASYNC async = DISABLE);
+  ~Logger();
 
   // Return logger's name_.
   std::string getName() const { return name_; }
 
+  void synclog(LogLevel::Level level, LogEventPtr event);
   void asynclog(LogLevel::Level level, LogEventPtr event);
 
   // Log the event.
@@ -58,6 +60,8 @@ class Logger : public std::enable_shared_from_this<Logger> {
   // Remove a log appender for logger.
   void removeAppender(LogAppenderPtr appender);
 
+  std::list<LogAppenderPtr> getAppenders() { return appenders_; }
+
   // Return a new log event.
   LogEventPtr makeEvent(LogLevel::Level level);
 
@@ -68,7 +72,9 @@ class Logger : public std::enable_shared_from_this<Logger> {
   void setLevel(LogLevel::Level level) { limit_level_ = level; }
 
   // If enable async log.
-  bool isAsync() const { return async_; }
+  bool isAsync() const { return async_enabled_; }
+
+  void stop();
 
  private:
   // Logger's name.
@@ -86,15 +92,9 @@ class Logger : public std::enable_shared_from_this<Logger> {
   // default_formatter_.
   LogFormatterPtr default_formatter_;
 
-  bool async_;
+  bool async_enabled_;
 
-  bool async_logging_;
-
-  void start_asynclog();
-
-  
-
-  std::vector<std::unique_ptr<std::thread>> theads_;
+  LogCollectorPtr collector_;
 };
 
 // Get the default logger.
@@ -102,14 +102,13 @@ std::shared_ptr<Logger> DefaultLogger();
 
 // Return a new logger.
 std::shared_ptr<Logger> makeLogger(const std::string &name,
-                                   ASYNC async = DISABLEASYNC);
+                                   ASYNC async = DISABLE);
 
 // Return a new stdout appender.
 std::shared_ptr<LogAppender> makeStdoutAppender();
 
 // Return a new file appender.
-std::shared_ptr<LogAppender> makeFileAppender(const std::string &file_name,
-                                              std::shared_ptr<Logger> logger);
+std::shared_ptr<LogAppender> makeFileAppender(const std::string &file_name);
 
 // Return a new log formatter.
 std::shared_ptr<LogFormatter> makeFormatter(const std::string &pattern);

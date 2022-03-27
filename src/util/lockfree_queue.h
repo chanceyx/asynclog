@@ -32,16 +32,15 @@ class LockFreeQueue {
 
 template <typename T, size_t N>
 bool LockFreeQueue<T, N>::initialize() {
-  if (initialized_ == true) {
-    return initialized_;
-  }
+  if (initialized_ == true) return true;
 
   queue_ = new Element[N];
-  if (queue_ != nullptr) {
+  if (queue_) {
     size_ = N;
     initialized_ = true;
+    return true;
   }
-  return initialized_;
+  return false;
 }
 
 template <typename T, size_t N>

@@ -13,12 +13,14 @@ void StdoutAppender::appendLog(LogLevel::Level level, LogEventPtr event) {
   }
 }
 
-void StdoutAppender::pushLog(LogLevel::Level level, LogEventPtr event) {
+void StdoutAppender::produce(LogLevel::Level level, LogEventPtr event) {
   if (level >= limit_level_) {
     log_formatter_->format(std::cout, level, event);
   }
 }
 
-void consume() {}
+void StdoutAppender::consume() {}
+
+void StdoutAppender::asyncInit() {}
 
 }  // namespace asynclog

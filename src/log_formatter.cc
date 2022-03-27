@@ -15,6 +15,8 @@ LogFormatter::LogFormatter(const std::string &pattern) : pattern_(pattern) {
   parse();
 }
 
+LogFormatter::~LogFormatter() {}
+
 std::string LogFormatter::format(LogLevel::Level level, LogEventPtr event) {
   std::stringstream ss;
   for (auto &i : items_) {

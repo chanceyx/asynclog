@@ -37,6 +37,8 @@ class LogFormatter : noncopyable {
 
   LogFormatter(const std::string &pattern);
 
+  ~LogFormatter();
+
   // Format the event to string base on pattern_.
   std::string format(LogLevel::Level level, LogEventPtr event);
 

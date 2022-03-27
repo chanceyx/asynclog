@@ -24,12 +24,16 @@ class FileAppender : noncopyable, public LogAppender {
   using FileLogAppenderPtr = std::shared_ptr<FileAppender>;
   using BufferPtr = std::unique_ptr<lockfreebuf::LockFreeQueue<LogEventPtr>>;
 
-  FileAppender(const std::string& file_name, bool async_logging);
+  FileAppender(const std::string& file_name);
+
+  ~FileAppender();
 
   // Append log to a file.
   void appendLog(LogLevel::Level level, LogEventPtr event) override;
 
-  void pushLog(LogLevel::Level level, LogEventPtr event) override;
+  void asyncInit() override;
+
+  void produce(LogLevel::Level level, LogEventPtr event) override;
 
   void consume() override;
 
