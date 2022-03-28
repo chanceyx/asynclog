@@ -9,14 +9,18 @@
 
 namespace asynclog {
 
-FileAppender::FileAppender(const std::string& file_name, bool async_logging)
+FileAppender::FileAppender(const std::string& file_name)
     : file_name_(file_name) {
   reopen();
-  if (async_logging) {
-    current_buffer_ = BufferPtr(new lockfreebuf::LockFreeQueue<LogEventPtr>);
-    if (!current_buffer_->initialize()) {
-      std::cout << "buffer init failed" << std::endl;
-    }
+}
+
+FileAppender::~FileAppender() {}
+
+void FileAppender::asyncInit() {
+  if (!current_buffer_) {
+    current_buffer_ = BufferPtr(new lockfreebuf::LockFreeQueue<LogEventPtr>());
+    // TODO: handle init fail case.
+    current_buffer_->initialize();
   }
 }
 
@@ -42,8 +46,9 @@ void FileAppender::appendLog(LogLevel::Level level, LogEventPtr event) {
   }
 }
 
-void FileAppender::pushLog(LogLevel::Level level, LogEventPtr event) {
-  if (current_buffer_ == nullptr) {
+void FileAppender::produce(LogLevel::Level level, LogEventPtr event) {
+  // TODO: handle init fail case
+  if (!current_buffer_ || !current_buffer_->initialize()) {
     std::cout << "buffer dose not exist, use sync log" << std::endl;
     appendLog(level, event);
     return;
@@ -57,7 +62,17 @@ void FileAppender::pushLog(LogLevel::Level level, LogEventPtr event) {
 
 void FileAppender::consume() {
   LogEventPtr ptr;
+  // TODO: consider multi collector.
   while (current_buffer_->Dequeue(ptr)) {
+    uint64_t now = ptr->getTime();
+    if (now >= (lasttime_ + 3)) {
+      reopen();
+      lasttime_ = now;
+    }
+
+    if (!log_formatter_->format(file_stream_, ptr->getLevel(), ptr)) {
+      std::cout << "error" << std::endl;
+    }
   }
 }
 

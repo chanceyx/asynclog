@@ -11,7 +11,7 @@
 namespace asynclog {
 
 class LogEvent;
-class Logger;
+class LoggerRaw;
 class LogEvent;
 class FormatItem;
 
@@ -33,9 +33,11 @@ class LogFormatter : noncopyable {
  public:
   using FormatItemPtr = std::shared_ptr<FormatItem>;
   using LogEventPtr = std::shared_ptr<LogEvent>;
-  using LoggerPtr = std::shared_ptr<Logger>;
+  using LoggerPtr = std::shared_ptr<LoggerRaw>;
 
   LogFormatter(const std::string &pattern);
+
+  ~LogFormatter();
 
   // Format the event to string base on pattern_.
   std::string format(LogLevel::Level level, LogEventPtr event);

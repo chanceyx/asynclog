@@ -1,4 +1,4 @@
-#include "current_thread.h"
+#include "current.h"
 
 namespace current {
 

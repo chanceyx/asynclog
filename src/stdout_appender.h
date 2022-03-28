@@ -12,8 +12,9 @@ class LogEvent;
 class StdoutAppender : noncopyable, public LogAppender {
  public:
   void appendLog(LogLevel::Level level, LogEventPtr event) override;
-  void pushLog(LogLevel::Level level, LogEventPtr event) override;
+  void produce(LogLevel::Level level, LogEventPtr event) override;
   void consume() override;
+  void asyncInit() override;
 };
 
 }  // namespace asynclog
