@@ -13,15 +13,15 @@
 namespace asynclog {
 
 class LogAppender;
-class Logger;
+class LoggerRaw;
 
 class LogCollector : noncopyable {
  public:
   using InitCallback = std::function<void()>;
   using LogAppenderPtr = std::shared_ptr<LogAppender>;
-  using LoggerPtr = std::shared_ptr<Logger>;
+  using LoggerRawPtr = std::shared_ptr<LoggerRaw>;
 
-  LogCollector(const LoggerPtr logger, const InitCallback &cb = InitCallback(),
+  LogCollector(const LoggerRawPtr logger, const InitCallback &cb = InitCallback(),
                const std::string &name = std::string());
 
   ~LogCollector();
@@ -44,7 +44,7 @@ class LogCollector : noncopyable {
   // Initialize callback.
   InitCallback init_callback_;
 
-  LoggerPtr logger_;
+  LoggerRawPtr logger_;
 };
 
 }  // namespace asynclog

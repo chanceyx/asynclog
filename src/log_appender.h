@@ -10,14 +10,14 @@ namespace asynclog {
 
 class LogFormatter;
 class LogEvent;
-class Logger;
+class LoggerRaw;
 
 // LogAppender is used to append log to a specific place.
 class LogAppender {
  public:
   using LogFormatterPtr = std::shared_ptr<LogFormatter>;
   using LogEventPtr = std::shared_ptr<LogEvent>;
-  using LoggerPtr = std::shared_ptr<Logger>;
+  using LoggerRawPtr = std::shared_ptr<LoggerRaw>;
 
   virtual ~LogAppender() {}
 

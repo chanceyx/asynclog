@@ -8,7 +8,7 @@
 
 namespace asynclog {
 
-LogCollector::LogCollector(const LoggerPtr logger, const InitCallback &cb,
+LogCollector::LogCollector(const LoggerRawPtr logger, const InitCallback &cb,
                            const std::string &name)
     : exiting_(false),
       thread_(std::bind(&LogCollector::collect, this), name),

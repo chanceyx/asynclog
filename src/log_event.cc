@@ -4,7 +4,7 @@
 
 namespace asynclog {
 
-LogEvent::LogEvent(LoggerPtr logger, LogLevel::Level level, const char* file,
+LogEvent::LogEvent(LoggerRawPtr logger, LogLevel::Level level, const char* file,
                    int32_t line, uint32_t elapse, uint32_t thread_id,
                    uint32_t fiber_id, uint64_t time,
                    const std::string& thread_name)

@@ -13,13 +13,13 @@
 namespace asynclog {
 
 class LogEvent;
-class Logger;
+class LoggerRaw;
 class LockFreeQueue;
 
 // FileAppender is used to append log to a file.
 class FileAppender : noncopyable, public LogAppender {
  public:
-  using LoggerPtr = std::shared_ptr<Logger>;
+  using LoggerRawPtr = std::shared_ptr<LoggerRaw>;
   using LogEventPtr = std::shared_ptr<LogEvent>;
   using FileLogAppenderPtr = std::shared_ptr<FileAppender>;
   using BufferPtr = std::unique_ptr<lockfreebuf::LockFreeQueue<LogEventPtr>>;

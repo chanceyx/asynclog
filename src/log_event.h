@@ -11,13 +11,13 @@
 
 namespace asynclog {
 
-class Logger;
+class LoggerRaw;
 
 // LogEvent is a event need to be record in log.
 class LogEvent : noncopyable {
  public:
-  using LoggerPtr = std::shared_ptr<Logger>;
-  LogEvent(LoggerPtr logger, LogLevel::Level level, const char* file,
+  using LoggerRawPtr = std::shared_ptr<LoggerRaw>;
+  LogEvent(LoggerRawPtr logger, LogLevel::Level level, const char* file,
            int32_t line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id,
            uint64_t time, const std::string& thread_name);
 
@@ -25,7 +25,7 @@ class LogEvent : noncopyable {
 
   std::string getContent() const { return content_ss_.str(); }
   std::string getThreadName() const { return t_name_; }
-  LoggerPtr getLogger() const { return logger_; }
+  LoggerRawPtr getLogger() const { return logger_; }
   LogLevel::Level getLevel() const { return level_; }
   std::stringstream& getContentSS() { return content_ss_; }
   const char* getFileName() const { return file_; }
@@ -67,7 +67,7 @@ class LogEvent : noncopyable {
   std::stringstream content_ss_;
 
   // Logger of this log event.
-  LoggerPtr logger_;
+  LoggerRawPtr logger_;
 
   LogLevel::Level level_;
 };

@@ -11,7 +11,7 @@
 
 namespace asynclog {
 
-class Logger;
+class LoggerRaw;
 
 // FormatItem is a single item of the formatter's pattern
 // A legal pattern:
@@ -32,7 +32,7 @@ class Logger;
 class FormatItem {
  public:
   using LogEventPtr = std::shared_ptr<LogEvent>;
-  using LoggerPtr = std::shared_ptr<Logger>;
+  using LoggerRawPtr = std::shared_ptr<LoggerRaw>;
   using FormatItemPtr = std::shared_ptr<FormatItem>;
 
   virtual ~FormatItem() {}
