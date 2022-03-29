@@ -6,7 +6,9 @@
 
 namespace lockfreebuf {
 
-template <typename T, size_t N = 1024>
+// LockFreeQueue is a queue lock free data structure for avoiding rate
+// condiction with atomic operation(no lock).
+template <typename T, size_t N = 1024 * 1024>
 class LockFreeQueue {
  public:
   struct Element {
@@ -17,15 +19,25 @@ class LockFreeQueue {
 
   LockFreeQueue();
   ~LockFreeQueue();
+
+  // Initialize queue.
   bool initialize();
+
+  // Enqueue & Dequeue elememt of queue.
   bool Enqueue(T value);
   bool Dequeue(T& value);
 
  private:
+  // Queue, default size is 1024 * 1024
   Element* queue_ = nullptr;
+
+  // Queue size.
   size_t size_ = 0;
+
+  // If queue_ is initialized.
   bool initialized_ = false;
 
+  // Read index & write index.
   std::atomic<size_t> read_idx_;
   std::atomic<size_t> write_idx_;
 };

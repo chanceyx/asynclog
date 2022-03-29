@@ -53,7 +53,7 @@ void LoggerRaw::addAppender(LogAppenderPtr appender) {
   }
 
   if (async_enabled_) {
-    appender->asyncInit();
+    appender->initBuffer();
     if (!collector_) {
       collector_ =
           std::shared_ptr<LogCollector>(new LogCollector(shared_from_this()));

@@ -21,18 +21,23 @@ class LogCollector : noncopyable {
   using LogAppenderPtr = std::shared_ptr<LogAppender>;
   using LoggerRawPtr = std::shared_ptr<LoggerRaw>;
 
-  LogCollector(const LoggerRawPtr logger, const InitCallback &cb = InitCallback(),
+  LogCollector(const LoggerRawPtr logger,
+               const InitCallback &cb = InitCallback(),
                const std::string &name = std::string());
 
   ~LogCollector();
 
+  // Start a log collect thread.
   void run();
+
+  // Stop and join the log collect thread.
   void stop();
 
  private:
   // Collect log events in buffer, and store them in file.
   void collect();
 
+  // Clean up the log buffer_.
   void cleanup();
 
   // Is collector is exiting.
@@ -44,6 +49,7 @@ class LogCollector : noncopyable {
   // Initialize callback.
   InitCallback init_callback_;
 
+  // Logger.
   LoggerRawPtr logger_;
 };
 

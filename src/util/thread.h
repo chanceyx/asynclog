@@ -12,6 +12,7 @@
 
 namespace asynclog {
 
+// Thread is a wrapper of std::thread.
 class Thread : noncopyable {
  public:
   using ThreadFunc = std::function<void()>;

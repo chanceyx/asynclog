@@ -21,6 +21,6 @@ void StdoutAppender::produce(LogLevel::Level level, LogEventPtr event) {
 
 void StdoutAppender::consume() {}
 
-void StdoutAppender::asyncInit() {}
+void StdoutAppender::initBuffer() {}
 
 }  // namespace asynclog

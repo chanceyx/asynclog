@@ -69,6 +69,7 @@ class LogEvent : noncopyable {
   // Logger of this log event.
   LoggerRawPtr logger_;
 
+  // Log event's level.
   LogLevel::Level level_;
 };
 
