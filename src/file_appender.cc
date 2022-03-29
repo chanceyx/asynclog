@@ -1,10 +1,10 @@
 #include "file_appender.h"
 
-#include <iostream>
 #include <memory>
 
 #include "log_event.h"
 #include "log_formatter.h"
+#include "util/current.h"
 #include "util/lockfree_queue.h"
 
 namespace asynclog {
@@ -41,7 +41,7 @@ void FileAppender::appendLog(LogLevel::Level level, LogEventPtr event) {
     }
 
     if (!log_formatter_->format(file_stream_, level, event)) {
-      std::cout << "error" << std::endl;
+      // TODO: handle error.
     }
   }
 }
@@ -49,14 +49,22 @@ void FileAppender::appendLog(LogLevel::Level level, LogEventPtr event) {
 void FileAppender::produce(LogLevel::Level level, LogEventPtr event) {
   // TODO: handle init fail case
   if (!buffer_ || !buffer_->initialize()) {
-    std::cout << "buffer dose not exist, use sync log" << std::endl;
+    auto init_fail_event =
+        std::shared_ptr<asynclog::LogEvent>(new asynclog::LogEvent(
+            event->getLogger(), LogLevel::Level::ERROR, __FILE__, __LINE__, 0,
+            current::tid(), 2, time(0), "test_thread"));
+    init_fail_event->getContentSS()
+        << "file appender buffer dose not exist, use sync log";
+    appendLog(LogLevel::Level::ERROR, init_fail_event);
     appendLog(level, event);
     return;
   }
 
   if (level >= limit_level_) {
-    int cnt = 0;
-    while (cnt < kRetry_ && !buffer_->Enqueue(event)) cnt++;
+    auto status = buffer_->Enqueue(event);
+    if (!status) {
+      appendLog(level, event);
+    }
   }
 }
 
@@ -71,7 +79,7 @@ void FileAppender::consume() {
     }
 
     if (!log_formatter_->format(file_stream_, ptr->getLevel(), ptr)) {
-      std::cout << "error" << std::endl;
+      // TODO: handle error.
     }
   }
 }

@@ -1,7 +1,7 @@
 #include "thread.h"
 
-#include <semaphore.h>
-
+#include <condition_variable>
+#include <mutex>
 #include <string>
 
 #include "current.h"
@@ -25,16 +25,25 @@ Thread::~Thread() {
 
 void Thread::start() {
   started_ = true;
-  sem_t sem;
-  sem_init(&sem, false, 0);
+  std::mutex mut;
+  std::unique_lock<std::mutex> lock(mut);
+  std::condition_variable cond;
 
   thread_ = std::shared_ptr<std::thread>(new std::thread([&] {
-    tid_ = current::tid();
-    sem_post(&sem);
+    {
+      std::unique_lock<std::mutex> lock(mut);
+      tid_ = current::tid();
+      cond.notify_one();
+    }
     thread_func_();
   }));
 
-  sem_wait(&sem);
+  cond.wait(lock, [&] {
+    if (tid_ == 0)
+      return false;
+    else
+      return true;
+  });
 }
 
 void Thread::join() {

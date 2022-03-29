@@ -8,6 +8,8 @@ namespace lockfreebuf {
 
 // LockFreeQueue is a queue lock free data structure for avoiding rate
 // condiction with atomic operation(no lock).
+//  T : element type.
+//  N : queue size, default 1024 * 1024.
 template <typename T, size_t N = 1024 * 1024>
 class LockFreeQueue {
  public:
@@ -79,9 +81,7 @@ bool LockFreeQueue<T, N>::Enqueue(T value) {
       return false;
     size_t index = write_index % size_;
     e = &queue_[index];
-    if (e->filled_.load(std::memory_order_relaxed)) {
-      return false;
-    }
+    if (e->filled_.load(std::memory_order_relaxed)) continue;
     succeed = write_idx_.compare_exchange_weak(write_index, write_index + 1,
                                                std::memory_order_release,
                                                std::memory_order_relaxed);
@@ -103,9 +103,7 @@ bool LockFreeQueue<T, N>::Dequeue(T& value) {
     }
     size_t index = read_index % size_;
     e = &queue_[index];
-    if (!e->filled_.load(std::memory_order_relaxed)) {
-      return false;
-    }
+    if (!e->filled_.load(std::memory_order_relaxed)) continue;
     succeed = read_idx_.compare_exchange_weak(read_index, read_index + 1,
                                               std::memory_order_release,
                                               std::memory_order_relaxed);
