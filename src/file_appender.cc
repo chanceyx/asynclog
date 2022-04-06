@@ -1,10 +1,10 @@
 #include "file_appender.h"
 
-#include <iostream>
 #include <memory>
 
 #include "log_event.h"
 #include "log_formatter.h"
+#include "util/current.h"
 #include "util/lockfree_queue.h"
 
 namespace asynclog {
@@ -16,11 +16,12 @@ FileAppender::FileAppender(const std::string& file_name)
 
 FileAppender::~FileAppender() {}
 
-void FileAppender::asyncInit() {
-  if (!current_buffer_) {
-    current_buffer_ = BufferPtr(new lockfreebuf::LockFreeQueue<LogEventPtr>());
+void FileAppender::initBuffer() {
+  if (!buffer_) {
+    buffer_ = std::make_unique<lockfreebuf::LockFreeQueue<LogEventPtr>>();
+    // buffer_ = BufferPtr(new lockfreebuf::LockFreeQueue<LogEventPtr>());
     // TODO: handle init fail case.
-    current_buffer_->initialize();
+    buffer_->initialize();
   }
 }
 
@@ -41,29 +42,36 @@ void FileAppender::appendLog(LogLevel::Level level, LogEventPtr event) {
     }
 
     if (!log_formatter_->format(file_stream_, level, event)) {
-      std::cout << "error" << std::endl;
+      // TODO: handle error.
     }
   }
 }
 
 void FileAppender::produce(LogLevel::Level level, LogEventPtr event) {
   // TODO: handle init fail case
-  if (!current_buffer_ || !current_buffer_->initialize()) {
-    std::cout << "buffer dose not exist, use sync log" << std::endl;
+  if (!buffer_ || !buffer_->initialize()) {
+    auto init_fail_event = std::make_shared<asynclog::LogEvent>(
+        event->getLogger(), LogLevel::Level::ERROR, __FILE__, __LINE__, 0,
+        current::tid(), 2, time(0), "test_thread");
+    init_fail_event->getContentSS()
+        << "file appender buffer dose not exist, use sync log";
+    appendLog(LogLevel::Level::ERROR, init_fail_event);
     appendLog(level, event);
     return;
   }
 
   if (level >= limit_level_) {
-    int cnt = 0;
-    while (cnt < kRetry_ && !current_buffer_->Enqueue(event)) cnt++;
+    auto status = buffer_->Enqueue(event);
+    if (!status) {
+      appendLog(level, event);
+    }
   }
 }
 
 void FileAppender::consume() {
   LogEventPtr ptr;
   // TODO: consider multi collector.
-  while (current_buffer_->Dequeue(ptr)) {
+  while (buffer_->Dequeue(ptr)) {
     uint64_t now = ptr->getTime();
     if (now >= (lasttime_ + 3)) {
       reopen();
@@ -71,7 +79,7 @@ void FileAppender::consume() {
     }
 
     if (!log_formatter_->format(file_stream_, ptr->getLevel(), ptr)) {
-      std::cout << "error" << std::endl;
+      // TODO: handle error.
     }
   }
 }

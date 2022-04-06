@@ -1,7 +1,5 @@
 #pragma once
 
-#include <unistd.h>
-
 #include <atomic>
 #include <functional>
 #include <memory>
@@ -12,6 +10,7 @@
 
 namespace asynclog {
 
+// Thread is a wrapper of std::thread.
 class Thread : noncopyable {
  public:
   using ThreadFunc = std::function<void()>;
@@ -33,7 +32,7 @@ class Thread : noncopyable {
   bool isJoined() { return joined_; }
 
   // Get thread_'s tid.
-  pid_t tid() const { return tid_; }
+  uint32_t tid() const { return tid_; }
 
   // Get Thread'a name.
   const std::string &name() const { return name_; }
@@ -55,7 +54,7 @@ class Thread : noncopyable {
   std::shared_ptr<std::thread> thread_;
 
   // Thread's id.
-  pid_t tid_;
+  uint32_t tid_;
 
   // Function the thread will be executing.
   ThreadFunc thread_func_;

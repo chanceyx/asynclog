@@ -4,6 +4,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "log_appender.h"
 #include "log_level.h"
@@ -31,10 +32,13 @@ class FileAppender : noncopyable, public LogAppender {
   // Append log to a file.
   void appendLog(LogLevel::Level level, LogEventPtr event) override;
 
-  void asyncInit() override;
+  // Initialize the buffer_, it will be called when the logger uses async mod.
+  void initBuffer() override;
 
+  // Push log event into buffer_.
   void produce(LogLevel::Level level, LogEventPtr event) override;
 
+  // Consume log event out of buffer_ and write into disk.
   void consume() override;
 
  private:
@@ -53,8 +57,8 @@ class FileAppender : noncopyable, public LogAppender {
   // File's last open time.
   uint64_t lasttime_ = 0;
 
-  BufferPtr current_buffer_;
-  BufferPtr next_buffer;
+  // Log events's buffer.
+  BufferPtr buffer_;
 };
 
 }  // namespace asynclog

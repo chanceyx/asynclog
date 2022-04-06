@@ -1,15 +1,10 @@
 #pragma once
 
-#include <stdint.h>
-
-#include <fstream>
 #include <list>
 #include <memory>
-#include <sstream>
 #include <string>
 
 #include "log.h"
-#include "log_appender.h"
 #include "log_level.h"
 
 namespace asynclog {
@@ -77,8 +72,11 @@ class LoggerRaw : noncopyable, public std::enable_shared_from_this<LoggerRaw> {
   // If enable async log.
   bool isAsync() const { return async_enabled_; }
 
-  // Stop the log collector thread.
-  void stop();
+  // Init collector thread in async mod.
+  void init();
+
+  // Stop the log collector thread in async mod.
+  void drop();
 
  private:
   // Logger's name.

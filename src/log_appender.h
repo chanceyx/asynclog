@@ -24,11 +24,14 @@ class LogAppender {
   // Append log to a specific place.
   virtual void appendLog(LogLevel::Level level, LogEventPtr event) = 0;
 
+  // Push log event into buffer_.
   virtual void produce(LogLevel::Level level, LogEventPtr event) = 0;
 
+  // Consume log event out of buffer_ and write into disk.
   virtual void consume() = 0;
 
-  virtual void asyncInit() = 0;
+  // Initialize the buffer_, it will be called when the logger uses async mod.
+  virtual void initBuffer() = 0;
 
   // Set a formatter of the appender.
   void setFormatter(LogFormatterPtr log_formatter) {
@@ -39,8 +42,10 @@ class LogAppender {
   LogFormatterPtr getFormatter() const { return log_formatter_; }
 
  protected:
-  //
+  // Limit log level of the appender.
   LogLevel::Level limit_level_ = LogLevel::DEBUG;
+
+  // Format of the appender.
   LogFormatterPtr log_formatter_;
 };
 

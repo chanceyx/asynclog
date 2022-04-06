@@ -6,7 +6,11 @@
 
 namespace lockfreebuf {
 
-template <typename T, size_t N = 1024>
+// LockFreeQueue is a queue lock free data structure for avoiding rate
+// condiction with atomic operation(no lock).
+//  T : element type.
+//  N : queue size, default 1024 * 1024.
+template <typename T, size_t N = 1024 * 1024>
 class LockFreeQueue {
  public:
   struct Element {
@@ -17,15 +21,25 @@ class LockFreeQueue {
 
   LockFreeQueue();
   ~LockFreeQueue();
+
+  // Initialize queue.
   bool initialize();
+
+  // Enqueue & Dequeue elememt of queue.
   bool Enqueue(T value);
   bool Dequeue(T& value);
 
  private:
+  // Queue, default size is 1024 * 1024
   Element* queue_ = nullptr;
+
+  // Queue size.
   size_t size_ = 0;
+
+  // If queue_ is initialized.
   bool initialized_ = false;
 
+  // Read index & write index.
   std::atomic<size_t> read_idx_;
   std::atomic<size_t> write_idx_;
 };
@@ -67,9 +81,7 @@ bool LockFreeQueue<T, N>::Enqueue(T value) {
       return false;
     size_t index = write_index % size_;
     e = &queue_[index];
-    if (e->filled_.load(std::memory_order_relaxed)) {
-      return false;
-    }
+    if (e->filled_.load(std::memory_order_relaxed)) continue;
     succeed = write_idx_.compare_exchange_weak(write_index, write_index + 1,
                                                std::memory_order_release,
                                                std::memory_order_relaxed);
@@ -91,9 +103,7 @@ bool LockFreeQueue<T, N>::Dequeue(T& value) {
     }
     size_t index = read_index % size_;
     e = &queue_[index];
-    if (!e->filled_.load(std::memory_order_relaxed)) {
-      return false;
-    }
+    if (!e->filled_.load(std::memory_order_relaxed)) continue;
     succeed = read_idx_.compare_exchange_weak(read_index, read_index + 1,
                                               std::memory_order_release,
                                               std::memory_order_relaxed);
