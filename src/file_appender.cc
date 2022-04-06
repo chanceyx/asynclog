@@ -18,7 +18,8 @@ FileAppender::~FileAppender() {}
 
 void FileAppender::initBuffer() {
   if (!buffer_) {
-    buffer_ = BufferPtr(new lockfreebuf::LockFreeQueue<LogEventPtr>());
+    buffer_ = std::make_unique<lockfreebuf::LockFreeQueue<LogEventPtr>>();
+    // buffer_ = BufferPtr(new lockfreebuf::LockFreeQueue<LogEventPtr>());
     // TODO: handle init fail case.
     buffer_->initialize();
   }
@@ -49,10 +50,9 @@ void FileAppender::appendLog(LogLevel::Level level, LogEventPtr event) {
 void FileAppender::produce(LogLevel::Level level, LogEventPtr event) {
   // TODO: handle init fail case
   if (!buffer_ || !buffer_->initialize()) {
-    auto init_fail_event =
-        std::shared_ptr<asynclog::LogEvent>(new asynclog::LogEvent(
-            event->getLogger(), LogLevel::Level::ERROR, __FILE__, __LINE__, 0,
-            current::tid(), 2, time(0), "test_thread"));
+    auto init_fail_event = std::make_shared<asynclog::LogEvent>(
+        event->getLogger(), LogLevel::Level::ERROR, __FILE__, __LINE__, 0,
+        current::tid(), 2, time(0), "test_thread");
     init_fail_event->getContentSS()
         << "file appender buffer dose not exist, use sync log";
     appendLog(LogLevel::Level::ERROR, init_fail_event);

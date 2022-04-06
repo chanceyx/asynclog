@@ -1,8 +1,16 @@
 #pragma once
 
 #include <stdint.h>
+
+#ifdef __linux__
 #include <sys/syscall.h>
 #include <unistd.h>
+#elif _WIN32
+#include <windows.h>
+#elif __APPLE__
+#include <pthread.h>
+#include <unistd.h>
+#endif
 
 // CurrentThread is used to get and catch the current thread information. Each
 // log event has a tid_ member, if each log event use system call to get their
@@ -12,14 +20,14 @@ namespace current {
 
 // variables declared by keyword __thread can have their own independent values
 // in each thread.
-extern __thread uint32_t t_cached_tid;         // thread id
+extern __thread uint64_t t_cached_tid;         // thread id
 extern __thread char t_tid_string[32];         // thread id in string
 extern __thread uint32_t t_tid_string_length;  // thread id's length in string
 extern __thread const char* t_thread_name;     // thread's name
 
 void cacheTid();
 
-inline uint32_t tid() {
+inline uint64_t tid() {
   if (__builtin_expect(t_cached_tid == 0, 0)) {
     cacheTid();
   }
@@ -32,4 +40,4 @@ inline const char* tidString() { return t_tid_string; }
 
 inline const char* threadName() { return t_thread_name; }
 
-}  // namespace CurrentThread
+}  // namespace current

@@ -47,6 +47,7 @@ void Thread::start() {
 }
 
 void Thread::join() {
+  if (joined_) return;
   joined_ = true;
   thread_->join();
 }

@@ -4,6 +4,7 @@
 #include <functional>
 #include <thread>
 
+#include "log_appender.h"
 #include "logger.h"
 
 namespace asynclog {
